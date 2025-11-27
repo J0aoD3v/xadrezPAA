@@ -1,0 +1,100 @@
+﻿Trabalho Final de PAA: Otimização com Backtracking
+
+
+Objetivo:
+Implementar um algoritmo de backtracking para resolver um problema de otimização combinatória. O objetivo é encontrar a configuração que maximiza o número de peças em um tabuleiro de xadrez, dadas as restrições de ataque e obstáculos.
+
+
+Descrição Geral do Problema:
+Dado um tabuleiro de dimensões NxN, onde N é uma constante global (ex: N = 8), o seu programa deve encontrar o número máximo de uma determinada peça de xadrez que pode ser posicionada no tabuleiro, respeitando duas regras:
+1. Nenhuma peça pode atacar outra.
+2. Nenhuma peça pode ser colocada em uma "casa bloqueada" (obstáculo).
+A peça específica (Rainha, Torre, Cavalo, etc.), os obstáculos são gerados aleatóriamente no tabuleiro.
+
+
+Implementação:
+Seu programa deve usar backtracking. A ideia central é varrer o tabuleiro, e para cada casa, testar duas possibilidades: (1) colocar uma peça ou (2) deixar a casa vazia.
+* Poda (Pruning): A "mágica" do backtracking está em não continuar a recursão se a escolha atual (colocar uma peça) criar um estado inválido. Para isso, você implementará uma função isSafe(tabuleiro, r, c).
+* Função isSafe(tabuleiro, r, c): Esta é a parte principal do seu trabalho. Esta função deve retornar True se for seguro colocar uma peça na casa (r, c) e False caso contrário. Uma colocação é "insegura" se:
+   1. A casa (r, c) for um obstáculo.
+   2. A casa (r, c) for atacada por qualquer outra peça já presente no tabuleiro.
+   3. A peça em (r, c) atacar qualquer outra peça já presente no tabuleiro.
+(Dica: A lógica 2 e 3 são simétricas)
+
+
+Saída Esperada:
+O programa deve imprimir:
+   1. O número máximo de peças que conseguiu posicionar.
+   2. Uma representação visual do tabuleiro com a solução ótima encontrada (ex: 'P' para peça, 'X' para obstáculo, '.' para casa vazia).
+
+
+Apresentações: 27/11, onde será mudado o tamanho do tabuleiro e a raíz da aleatoriedade. O estudante deve explicar, exatamente, o que faz cada linha de código do seu script. Não deve haver nenhum comentário no código durante a apresentação.
+________________
+
+
+Código-Base em Python: na atividade do classroom
+
+
+________________
+
+
+________________
+Enunciados Individuais: a única coisa que muda é a lógica da função isSafe().
+
+
+Trabalho 1: Rainhas
+   * Peça: Rainha (ataca em linhas, colunas e diagonais)
+   * AnibalSN
+
+
+Trabalho 2: Torres
+   * Peça: Torre (ataca em linhas e colunas)
+   * JoãoGN
+
+
+Trabalho 3: Bispos
+   * Peça: Bispo (ataca nas diagonais)
+   * GabrielRO
+
+
+Trabalho 4: Cavalos
+   * Peça: Cavalo (ataca em "L": (±2, ±1) e (±1, ±2))
+   * AugustoMP
+
+
+Trabalho 5: Reis
+   * Peça: Rei (ataca 1 casa em todas as direções)
+   * GiovanniRM
+
+
+Trabalho 6: Amazonas
+   * Peça: Amazona (ataca como Rainha E como Cavalo)
+   * JoãoCFMC
+
+
+Trabalho 7: Camelos
+   * Peça: Camelo (peça "saltadora" que ataca em "L" longo: (±3, ±1) e (±1, ±3))
+   * JoaoHMO
+
+
+Trabalho 8: Centauros
+   * Peça: Centauro (ataca como Rei E como Cavalo)
+   * JoãoPSRL
+
+
+Trabalho 9: O Chanceler
+   * Peça: Chanceler (ataca como Torre E como Cavalo)
+   * LeandroFN
+
+
+Trabalho 10: O Arcebispo
+   * Peça: Arcebispo (ataca como Bispo E como Cavalo)
+   * MatheusLB
+
+
+Trabalho 11: A Zebra
+   * Peça: Zebra (peça "saltadora" que ataca em "L" mais longo: (±3, ±2) e (±2, ±3))
+   * PedroNS
+
+
+________________
