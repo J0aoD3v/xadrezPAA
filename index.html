@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trabalho PAA - Amazona (Backtracking)</title>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        input[type="number"] {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            margin-top: 10px;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #resultado {
+            margin-top: 30px;
+        }
+
+        .resultado-header {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .resultado-header h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .resultado-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+        }
+
+        .stat-card .label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .tabuleiro-container {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            display: inline-block;
+            margin: 20px auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .tabuleiro {
+            display: grid;
+            gap: 2px;
+            background: #333;
+            padding: 2px;
+            border-radius: 8px;
+        }
+
+        .casa {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .casa.clara {
+            background: #f0d9b5;
+        }
+
+        .casa.escura {
+            background: #b58863;
+        }
+
+        .casa.peca {
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .legenda {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legenda-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .legenda-simbolo {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-size: 18px;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .casa {
+                width: 35px;
+                height: 35px;
+                font-size: 18px;
+            }
+
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>♛ Trabalho PAA - Amazona ♛</h1>
+            <p>Otimização com Backtracking | João CFMC</p>
+        </header>
+
+        <div class="content">
+            <div class="info-box">
+                <h3>📋 Sobre a Peça Amazona</h3>
+                <p>A <strong>Amazona</strong> é uma peça de xadrez que combina os poderes da <strong>Rainha</strong> (ataca em linhas, colunas e diagonais) e do <strong>Cavalo</strong> (ataca em movimento "L"). É considerada a peça mais poderosa do xadrez!</p>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label for="tamanho">📐 Tamanho do Tabuleiro (N×N):</label>
+                    <input type="number" id="tamanho" value="8" min="4" max="12">
+                </div>
+
+                <div class="control-group">
+                    <label for="semente">🎲 Semente (Matrícula):</label>
+                    <input type="number" id="semente" value="20221" min="1">
+                </div>
+
+                <div class="control-group">
+                    <label for="obstaculos">🚧 Percentual de Obstáculos (%):</label>
+                    <input type="number" id="obstaculos" value="10" min="0" max="30" step="5">
+                </div>
+            </div>
+
+            <button id="executar" onclick="executarBacktracking()">
+                🚀 Executar Backtracking
+            </button>
+
+            <div id="loading">
+                <div class="spinner"></div>
+                <p>Executando backtracking... Isso pode levar alguns segundos.</p>
+            </div>
+
+            <div id="resultado"></div>
+        </div>
+
+        <footer>
+            <p>Desenvolvido para o Trabalho de Projeto e Análise de Algoritmos</p>
+            <p>Universidade | 2025 | <a href="https://github.com/J0aoD3v/xadrezPAA" target="_blank">GitHub</a></p>
+        </footer>
+    </div>
+
+    <script>
+        let pyodideReady = false;
+        let pyodide;
+
+        async function loadPyodide() {
+            if (pyodideReady) return;
+            
+            try {
+                pyodide = await loadPyodide();
+                pyodideReady = true;
+                console.log('Pyodide carregado com sucesso!');
+            } catch (error) {
+                console.error('Erro ao carregar Pyodide:', error);
+                alert('Erro ao carregar Python. Por favor, recarregue a página.');
+            }
+        }
+
+        // Carrega Pyodide assim que a página carregar
+        window.addEventListener('load', loadPyodide);
+
+        async function executarBacktracking() {
+            const btnExecutar = document.getElementById('executar');
+            const loading = document.getElementById('loading');
+            const resultado = document.getElementById('resultado');
+
+            if (!pyodideReady) {
+                alert('Python ainda está carregando... Aguarde alguns segundos e tente novamente.');
+                return;
+            }
+
+            btnExecutar.disabled = true;
+            loading.style.display = 'block';
+            resultado.innerHTML = '';
+
+            const N = parseInt(document.getElementById('tamanho').value);
+            const semente = parseInt(document.getElementById('semente').value);
+            const percentualObstaculos = parseFloat(document.getElementById('obstaculos').value);
+
+            const pythonCode = `
+import random
+import copy
+
+N = ${N}
+PERCENTUAL_OBSTACULOS = ${percentualObstaculos}
+SEMENTE_ALUNO = ${semente}
+
+max_pecas = 0
+melhor_tabuleiro = []
+
+def gerar_obstaculos(semente, n, percentual):
+    random.seed(semente)
+    total_casas = n * n
+    num_obstaculos = int(total_casas * (percentual / 100.0))
+    todas_casas = [(r, c) for r in range(n) for c in range(n)]
+    obstaculos = random.sample(todas_casas, num_obstaculos)
+    return obstaculos
+
+def isSafe(tabuleiro, r, c, obstaculos_list):
+    if (r, c) in obstaculos_list:
+        return False
+    
+    for i in range(N):
+        if tabuleiro[r][i] == 'P':
+            return False
+    
+    for i in range(N):
+        if tabuleiro[i][c] == 'P':
+            return False
+    
+    for i in range(N):
+        if 0 <= r - i < N and 0 <= c - i < N:
+            if tabuleiro[r - i][c - i] == 'P':
+                return False
+        if 0 <= r + i < N and 0 <= c + i < N:
+            if tabuleiro[r + i][c + i] == 'P':
+                return False
+    
+    for i in range(N):
+        if 0 <= r - i < N and 0 <= c + i < N:
+            if tabuleiro[r - i][c + i] == 'P':
+                return False
+        if 0 <= r + i < N and 0 <= c - i < N:
+            if tabuleiro[r + i][c - i] == 'P':
+                return False
+    
+    movimentos_cavalo = [
+        (-2, -1), (-2, 1),
+        (-1, -2), (-1, 2),
+        ( 1, -2), ( 1, 2),
+        ( 2, -1), ( 2, 1)
+    ]
+    
+    for dr, dc in movimentos_cavalo:
+        nr, nc = r + dr, c + dc
+        if 0 <= nr < N and 0 <= nc < N:
+            if tabuleiro[nr][nc] == 'P':
+                return False
+    
+    return True
+
+def solve(index, count, tabuleiro, obstaculos_list):
+    global max_pecas, melhor_tabuleiro
+    
+    if index == N * N:
+        if count > max_pecas:
+            max_pecas = count
+            melhor_tabuleiro = copy.deepcopy(tabuleiro)
+        return
+    
+    r = index // N
+    c = index % N
+    
+    if isSafe(tabuleiro, r, c, obstaculos_list):
+        tabuleiro[r][c] = 'P'
+        solve(index + 1, count + 1, tabuleiro, obstaculos_list)
+        tabuleiro[r][c] = '.'
+    
+    solve(index + 1, count, tabuleiro, obstaculos_list)
+
+OBSTACULOS = gerar_obstaculos(SEMENTE_ALUNO, N, PERCENTUAL_OBSTACULOS)
+tabuleiro_inicial = [['.' for _ in range(N)] for _ in range(N)]
+solve(0, 0, tabuleiro_inicial, OBSTACULOS)
+
+resultado = {
+    'max_pecas': max_pecas,
+    'tabuleiro': melhor_tabuleiro,
+    'obstaculos': OBSTACULOS,
+    'N': N
+}
+resultado
+`;
+
+            try {
+                const startTime = performance.now();
+                const resultado = await pyodide.runPythonAsync(pythonCode);
+                const endTime = performance.now();
+                const tempoExecucao = ((endTime - startTime) / 1000).toFixed(2);
+
+                const data = resultado.toJs({dict_converter: Object.fromEntries});
+                
+                mostrarResultado(data, tempoExecucao);
+            } catch (error) {
+                console.error('Erro:', error);
+                resultado.innerHTML = `<div class="info-box" style="border-left-color: red;"><h3>❌ Erro na execução</h3><p>${error.message}</p></div>`;
+            } finally {
+                btnExecutar.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        function mostrarResultado(data, tempoExecucao) {
+            const resultadoDiv = document.getElementById('resultado');
+            const N = data.N;
+            const maxPecas = data.max_pecas;
+            const tabuleiro = data.tabuleiro;
+            const obstaculos = data.obstaculos;
+
+            // Converte obstáculos para Set para busca rápida
+            const obsSet = new Set(obstaculos.map(([r, c]) => `${r},${c}`));
+
+            let html = `
+                <div class="resultado-header">
+                    <h2>🎉 Resultado do Backtracking</h2>
+                </div>
+
+                <div class="resultado-stats">
+                    <div class="stat-card">
+                        <div class="label">Peças Posicionadas</div>
+                        <div class="value">${maxPecas}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Obstáculos</div>
+                        <div class="value">${obstaculos.length}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Tempo de Execução</div>
+                        <div class="value">${tempoExecucao}s</div>
+                    </div>
+                </div>
+
+                <div style="text-align: center;">
+                    <div class="tabuleiro-container">
+                        <div class="tabuleiro" style="grid-template-columns: repeat(${N}, 1fr);">
+            `;
+
+            for (let r = 0; r < N; r++) {
+                for (let c = 0; c < N; c++) {
+                    const cor = (r + c) % 2 === 0 ? 'clara' : 'escura';
+                    const isObstaculo = obsSet.has(`${r},${c}`);
+                    const isPeca = tabuleiro[r][c] === 'P';
+                    
+                    let conteudo = '';
+                    let classe = `casa ${cor}`;
+                    
+                    if (isObstaculo) {
+                        conteudo = '🚧';
+                    } else if (isPeca) {
+                        conteudo = '♛';
+                        classe += ' peca';
+                    }
+                    
+                    html += `<div class="${classe}">${conteudo}</div>`;
+                }
+            }
+
+            html += `
+                        </div>
+                        <div class="legenda">
+                            <div class="legenda-item">
+                                <div class="legenda-simbolo">♛</div>
+                                <span>Amazona</span>
+                            </div>
+                            <div class="legenda-item">
+                                <div class="legenda-simbolo">🚧</div>
+                                <span>Obstáculo</span>
+                            </div>
+                            <div class="legenda-item">
+                                <div class="legenda-simbolo" style="background: #f0d9b5;"></div>
+                                <span>Casa Vazia</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            resultadoDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
