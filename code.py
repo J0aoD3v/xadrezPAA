@@ -28,7 +28,7 @@ PERCENTUAL_OBSTACULOS = 10.0 # 10%
 # --- TODO: ALUNO ---
 # Coloque aqui os primeiros 5 dígitos seu número de matrícula
 # Isso garante que seu "tabuleiro aleatório" seja único, mas reprodutível.
-SEMENTE_ALUNO = 12345
+SEMENTE_ALUNO = 20221
 # --- FIM DO TODO ---
 
 
