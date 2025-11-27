@@ -13,7 +13,8 @@ Sua tarefa é:
 """
 
 import random
-import copy # Para copiar o tabuleiro da melhor solução
+import copy
+import sys
 
 # ---
 # Configurações Globais do Trabalho
@@ -62,7 +63,7 @@ def gerar_obstaculos(semente, n, percentual):
     
     return obstaculos
 
-def imprimir_tabuleiro(tabuleiro):
+def imprimir_tabuleiro(tabuleiro, obstaculos_list=None):
     """
     Imprime o tabuleiro no console de forma legível.
     'P' = Peça
@@ -72,12 +73,15 @@ def imprimir_tabuleiro(tabuleiro):
     if not tabuleiro:
         print("Nenhuma solução encontrada.")
         return
+    
+    if obstaculos_list is None:
+        obstaculos_list = OBSTACULOS
         
-    for r in range(N):
-        # Constrói a string da linha
+    tamanho = len(tabuleiro)
+    for r in range(tamanho):
         linha = []
-        for c in range(N):
-            if (r, c) in OBSTACULOS:
+        for c in range(tamanho):
+            if (r, c) in obstaculos_list:
                 linha.append('X')
             elif tabuleiro[r][c] == 'P':
                 linha.append('P')
@@ -222,16 +226,33 @@ def solve(index, count, tabuleiro, obstaculos_list):
 # ---
 if __name__ == "__main__":
     
+    n = N
+    semente = SEMENTE_ALUNO
+    percentual = PERCENTUAL_OBSTACULOS
+    
+    if len(sys.argv) > 1:
+        n = int(sys.argv[1])
+    if len(sys.argv) > 2:
+        semente = int(sys.argv[2])
+    if len(sys.argv) > 3:
+        percentual = float(sys.argv[3])
+    
+    print(f"Configuração: Tabuleiro {n}x{n}, Semente {semente}, Obstáculos {percentual}%")
+    
     # 1. Gera os obstáculos com base na semente do aluno
-    OBSTACULOS = gerar_obstaculos(SEMENTE_ALUNO, N, PERCENTUAL_OBSTACULOS)
+    OBSTACULOS = gerar_obstaculos(semente, n, percentual)
     
     # 2. Cria um tabuleiro inicial vazio (preenchido com '.')
-    tabuleiro_inicial = [['.' for _ in range(N)] for _ in range(N)]
+    tabuleiro_inicial = [['.' for _ in range(n)] for _ in range(n)]
     
     # 3. Inicia o processo de backtracking
     #    Começa na casa 0, com 0 peças, no tabuleiro inicial
     print("Iniciando backtracking... (Isso pode demorar alguns segundos)")
+    
+    N_original = N
+    N = n
     solve(0, 0, tabuleiro_inicial, OBSTACULOS)
+    N = N_original
     
     # 4. Imprime os resultados finais
     print("----------------------------------------")
@@ -239,4 +260,4 @@ if __name__ == "__main__":
     print(f"NÚMERO MÁXIMO DE PEÇAS: {max_pecas}")
     print("----------------------------------------")
     print("Melhor configuração encontrada:")
-    imprimir_tabuleiro(melhor_tabuleiro)
+    imprimir_tabuleiro(melhor_tabuleiro, OBSTACULOS)
